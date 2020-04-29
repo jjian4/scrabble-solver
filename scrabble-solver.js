@@ -13,20 +13,29 @@ prompt.get(['letters', 'startsWith', 'endsWith', 'mustInclude'], function (
 ) {
     console.log('Finding combinations...');
     const { letters, startsWith, endsWith, mustInclude } = result;
-    let directMatches = new Set(
-        scrabble(letters).filter(
-            (word) =>
-                word.length > 2 &&
-                word.startsWith(startsWith || '') &&
-                word.endsWith(endsWith || '') &&
-                word.includes(mustInclude || '')
-        )
-    );
 
-    let otherMatches = new Set(directMatches);
+    let directMatches = new Set();
+    const results = scrabble(letters);
+    if (Array.isArray(results)) {
+        directMatches = new Set(
+            results.filter(
+                (word) =>
+                    word.length > 2 &&
+                    word.startsWith(startsWith || '') &&
+                    word.endsWith(endsWith || '') &&
+                    word.includes(mustInclude || '')
+            )
+        );
+    }
+
+    otherMatches = new Set(directMatches);
 
     for (var i = 'a'.charCodeAt(0); i <= 'z'.charCodeAt(0); i++) {
         const results = scrabble(letters.concat(String.fromCharCode(i)));
+        if (!Array.isArray(results)) {
+            continue;
+        }
+
         results.forEach((item) => {
             if (
                 item.length > 2 &&
